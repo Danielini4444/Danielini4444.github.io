@@ -40,6 +40,12 @@ function fotocuatro(){
 function fotocinco(){
 	alert('Esta fue mi etapa de reencontrame conmigo mismo hasta que volvi a ser yo')
 }
+function fotoseis(){
+	alert('Fue la primera cita con Cari, fuimos a Angelopolis y tomamos un starbucks, despues fuimos al cine')
+}
+function fotosiete(){
+	alert('Es el primer picnic que tengo en mi vida, fue con mi chefsita, todo el dia fue muy lindo')
+}
 function instagram(){
 	 window.location.href = "https://www.instagram.com/danieldiaz.tkd/";
 }
