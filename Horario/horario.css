@@ -1,0 +1,48 @@
+#tabla {
+    width: 1280px;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 20px;
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    color: white; /* Texto en blanco */
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 5px;
+
+}
+body{
+    text-align: center;
+    font-family: Bahnschrift, sans-serif;
+    background-image: url('../Images/fondo.jpg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+}
+button {
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  color: white; /* Texto en blanco */
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  backdrop-filter: blur(5px);
+}
+
+button:hover {
+    background: rgba(255, 255, 255, 0.4);
+    transform:scale(1.1);
+}
+thead{
+    font-size: 50px;
+}
+td{
+    padding: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+}
+.vacio{
+    border: none;
+}
