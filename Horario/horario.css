@@ -1,5 +1,6 @@
 #tabla {
-    cellspacing="0";
+    border-spacing: 0 !important;
+    border-collapse: collapse !important;
     width: 1280px;
     text-align: center;
     margin-left: auto;
