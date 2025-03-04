@@ -39,13 +39,13 @@ body{
   font-family: 'Josefin Sans', cursive;
 }
 .parrafo_uno{
-  font-size: 30px;
+  font-size: 35px;
   margin: 20px;
   padding: 20px;
   display: flex;
   text-align: justify;
   align-items: center;
-  gap: 70px;
+  gap: 50px;
   padding-top: 0px;
 }
 .parrafo_uno img{
@@ -70,13 +70,13 @@ img:hover{
   transform:scale(1.05);
 }
 .parrafo_dos{
-  font-size: 35px;
+  font-size: 30px;
   margin: 20px;
   padding: 20px;
   text-align: justify;
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 50px;
   padding-top: 0px;
 }
 .parrafo_dos img{
