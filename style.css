@@ -413,6 +413,15 @@ body {
   font-weight: 500;
 }
 
+.site-footer .copyright {
+  margin-top: 6px;
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  color: var(--color-muted);
+  text-transform: none;
+  font-weight: 300;
+}
+
 /* ── RESPONSIVE ── */
 @media (max-width: 900px) {
   .masthead {
