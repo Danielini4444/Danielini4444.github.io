@@ -97,6 +97,13 @@ body {
   list-style: none;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding-right: 24px;
+}
+
+.category-nav::-webkit-scrollbar {
+  display: none;
 }
 
 .category-nav a {
@@ -466,10 +473,7 @@ body {
 
   .category-bar-inner {
     padding: 0 16px;
-    flex-direction: column;
-    height: auto;
-    padding: 10px 16px;
-    gap: 6px;
+    height: 44px;
   }
 
   .category-nav {
