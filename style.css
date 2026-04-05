@@ -27,7 +27,7 @@ body {
   background-color: var(--color-bg);
   color: var(--color-text);
   font-family: var(--font-body);
-  line-height: 1.6;
+  line-height: 1;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -47,6 +47,12 @@ body {
 .masthead-inner {
   max-width: 800px;
   margin: 0 auto;
+}
+
+.masthead-logo {
+  height: 100px;
+  width: auto;
+  object-fit: contain;
 }
 
 .masthead-title {
