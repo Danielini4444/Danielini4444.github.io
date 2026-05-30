@@ -1,0 +1,194 @@
+// Page detection — no auth
+if (document.getElementById('featured-section')) {
+  loadBlog();
+} else if (document.getElementById('post-content')) {
+  loadPost();
+}
+
+function formatDate(dateStr) {
+  var months = [
+    'enero','febrero','marzo','abril','mayo','junio',
+    'julio','agosto','septiembre','octubre','noviembre','diciembre'
+  ];
+  var d = new Date(dateStr + 'T12:00:00');
+  return d.getDate() + ' de ' + months[d.getMonth()] + ' de ' + d.getFullYear();
+}
+
+function loadBlog() {
+  // Set date
+  var dateEl = document.getElementById('masthead-date');
+  if (dateEl) {
+    var now = new Date();
+    var days = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
+    var months = [
+      'enero','febrero','marzo','abril','mayo','junio',
+      'julio','agosto','septiembre','octubre','noviembre','diciembre'
+    ];
+    dateEl.textContent = days[now.getDay()] + ', ' + now.getDate() + ' de ' + months[now.getMonth()] + ' de ' + now.getFullYear();
+  }
+
+  fetch('posts.json')
+    .then(function(res) { return res.json(); })
+    .then(function(posts) {
+      var featured = posts.find(function(p) { return p.featured; });
+      var rest = posts.filter(function(p) { return !p.featured; });
+
+      // Render featured
+      var featuredSection = document.getElementById('featured-section');
+      if (featured) {
+        featuredSection.innerHTML =
+          '<div class="featured-card" onclick="window.location.href=\'post.html?id=' + featured.id + '\'">' +
+            '<div class="featured-left">' +
+              '<span class="featured-label">Destacado</span>' +
+              '<span class="featured-category">' + featured.category + '</span>' +
+              '<h2>' + featured.title + '</h2>' +
+              '<p class="featured-subtitle">' + featured.subtitle + '</p>' +
+              '<p class="featured-excerpt">' + featured.excerpt + '</p>' +
+            '</div>' +
+            '<div class="featured-right">' +
+              '<blockquote class="pull-quote">' + featured.pullQuote + '</blockquote>' +
+            '</div>' +
+          '</div>';
+      }
+
+      // Render grid
+      renderGrid(rest);
+
+      // Category filtering
+      var allPosts = posts;
+      document.getElementById('category-nav').addEventListener('click', function(e) {
+        if (e.target.tagName !== 'A') return;
+        e.preventDefault();
+
+        // Update active state
+        var links = document.querySelectorAll('.category-nav a');
+        for (var i = 0; i < links.length; i++) {
+          links[i].classList.remove('active');
+        }
+        e.target.classList.add('active');
+
+        var category = e.target.getAttribute('data-category');
+        var filtered;
+        if (category === 'all') {
+          filtered = allPosts.filter(function(p) { return !p.featured; });
+          featuredSection.style.display = '';
+        } else {
+          filtered = allPosts.filter(function(p) { return p.category === category; });
+          featuredSection.style.display = 'none';
+        }
+        renderGrid(filtered);
+      });
+    });
+}
+
+function renderGrid(posts) {
+  var grid = document.getElementById('posts-grid');
+  grid.innerHTML = posts.map(function(post) {
+    return '<div class="post-card" onclick="window.location.href=\'post.html?id=' + post.id + '\'">' +
+      '<div class="post-card-inner">' +
+        '<div class="card-top"></div>' +
+        '<span class="card-category">' + post.category + '</span>' +
+        '<h3>' + post.title + '</h3>' +
+        '<p class="card-subtitle">' + post.subtitle + '</p>' +
+        '<p class="card-excerpt">' + post.excerpt + '</p>' +
+        '<span class="card-date">' + formatDate(post.date) + '</span>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function estimateReadingTime(html) {
+  var text = html.replace(/<[^>]+>/g, ' ');
+  var words = text.split(/\s+/).filter(Boolean).length;
+  return Math.max(1, Math.round(words / 220));
+}
+
+function loadPost() {
+  var id = parseInt(new URLSearchParams(location.search).get('id'), 10);
+
+  fetch('posts.json')
+    .then(function(res) { return res.json(); })
+    .then(function(posts) {
+      var post = posts.find(function(p) { return p.id === id; });
+      if (!post) {
+        document.getElementById('post-content').innerHTML = '<p>Entrada no encontrada.</p>';
+        return;
+      }
+
+      document.title = post.title + ' — El Diario de Daniel';
+
+      var minutes = estimateReadingTime(post.content);
+
+      document.getElementById('post-content').innerHTML =
+        '<span class="post-category-tag">' + post.category + '</span>' +
+        '<h1>' + post.title + '</h1>' +
+        '<p class="post-meta">' + post.subtitle + ' &middot; ' + formatDate(post.date) + ' &middot; ' + minutes + ' min de lectura</p>' +
+        '<div class="post-body">' + post.content + '</div>' +
+        '<div class="post-end-ornament" aria-hidden="true">&middot; &middot; &middot;</div>';
+
+      // Sticky aside with pull quote + meta
+      var aside = document.getElementById('post-aside');
+      if (aside && post.pullQuote) {
+        aside.innerHTML =
+          '<div class="post-aside-inner">' +
+            '<div class="aside-label">Del texto</div>' +
+            '<blockquote class="aside-quote">&ldquo;' + post.pullQuote + '&rdquo;</blockquote>' +
+            '<div class="aside-meta">' +
+              '<div class="aside-meta-row"><span>Categoría</span><strong>' + post.category + '</strong></div>' +
+              '<div class="aside-meta-row"><span>Lectura</span><strong>' + minutes + ' min</strong></div>' +
+              '<div class="aside-meta-row"><span>Publicado</span><strong>' + formatDate(post.date) + '</strong></div>' +
+            '</div>' +
+            '<a href="#top" class="aside-top" onclick="window.scrollTo({top:0,behavior:\'smooth\'});return false;">' +
+              '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>' +
+              'Volver arriba' +
+            '</a>' +
+          '</div>';
+      }
+
+      // Related entries (other posts, most recent first, exclude current)
+      var related = posts
+        .filter(function(p) { return p.id !== id; })
+        .sort(function(a, b) { return b.date.localeCompare(a.date); })
+        .slice(0, 3);
+
+      var relatedSection = document.getElementById('related-section');
+      if (relatedSection && related.length) {
+        relatedSection.innerHTML =
+          '<div class="related-inner">' +
+            '<div class="section-header">' +
+              '<h2 class="section-title">Continúa leyendo</h2>' +
+              '<div class="section-line"></div>' +
+            '</div>' +
+            '<div class="related-grid">' +
+              related.map(function(p) {
+                return '<div class="post-card" onclick="window.location.href=\'post.html?id=' + p.id + '\'">' +
+                  '<div class="post-card-inner">' +
+                    '<div class="card-top"></div>' +
+                    '<span class="card-category">' + p.category + '</span>' +
+                    '<h3>' + p.title + '</h3>' +
+                    '<p class="card-subtitle">' + p.subtitle + '</p>' +
+                    '<p class="card-excerpt">' + p.excerpt + '</p>' +
+                    '<span class="card-date">' + formatDate(p.date) + '</span>' +
+                  '</div>' +
+                '</div>';
+              }).join('') +
+            '</div>' +
+          '</div>';
+      }
+
+      // Reading progress bar
+      var bar = document.getElementById('reading-progress-bar');
+      if (bar) {
+        var update = function() {
+          var h = document.documentElement;
+          var scrolled = h.scrollTop || document.body.scrollTop;
+          var max = (h.scrollHeight - h.clientHeight) || 1;
+          var pct = Math.min(100, Math.max(0, (scrolled / max) * 100));
+          bar.style.width = pct + '%';
+        };
+        window.addEventListener('scroll', update, { passive: true });
+        window.addEventListener('resize', update);
+        update();
+      }
+    });
+}
